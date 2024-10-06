@@ -1,0 +1,21 @@
+version: '3'
+services:
+  neoload-controller:
+    image: neotys/neoload-controller:latest
+    container_name: neoload-controller
+    ports:
+      - "7400:7400"   # Controller port (UI)
+      - "7100:7100"   # REST API port
+    environment:
+      - LICENSE_PATH=/license/nl.lic
+    volumes:
+      - ./license:/license  # Neoload license
+      - ./tests:/tests      # Neoload test scripts
+
+  neoload-loadgenerator:
+    image: neotys/neoload-loadgenerator:latest
+    container_name: neoload-loadgenerator
+    depends_on:
+      - neoload-controller
+    ports:
+      - "7101:7100"  # Load Generator port
