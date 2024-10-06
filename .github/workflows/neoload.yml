@@ -1,0 +1,37 @@
+name: Neoload Test Execution
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  neoload_job:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Docker Compose
+      - name: Set up Docker Compose
+        run: sudo apt-get update && sudo apt-get install -y docker-compose
+
+      # Step 3: Build and run Docker Compose
+      - name: Build and run Docker Compose
+        run: |
+          docker-compose up -d
+
+      # Step 4: Run Neoload test using REST API
+      - name: Run Neoload test
+        run: |
+          curl -X POST "http://localhost:7100/v1/tests" -H "accept: application/json" -H "Content-Type: application/json" \
+          -d '{"project":"/tests/super.nlp", "scenario":"supertest"}'
+
+      # Step 5: Stop and clean up containers
+      - name: Stop and remove Docker containers
+        run: docker-compose down
